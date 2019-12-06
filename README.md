@@ -2,7 +2,9 @@
 ## 1) KMean 
 ### Data and Goal
 
+
 The data are from the Breast Cancer Wisconsin (Diagnostic) Database.
+
 The goal is to create a classifier that can help diagnose patients.
 
     Data Set Characteristics:
