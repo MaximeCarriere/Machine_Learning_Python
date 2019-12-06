@@ -23,8 +23,8 @@ The goal is to create a classifier that can help diagnose patients.
         - symmetry 
         - fractal dimension ("coastline approximation" - 1)
         - class:
-                - WDBC-Malignant
-                - WDBC-Benign
+                - WDBC-Malignant (1)
+                - WDBC-Benign (0)
 
 
 
