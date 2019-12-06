@@ -5,8 +5,8 @@
 The data are from the Breast Cancer Wisconsin (Diagnostic) Database.
 The goal is to create a classifier that can help diagnose patients.
 
+    Data Set Characteristics:
 
-Data Set Characteristics:
     -Number of Instances: 569
     -Number of Attributes: 30 numeric, predictive attributes and the class
     -Attribute Information:
