@@ -1,0 +1,174 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+
+import numpy as np
+import pandas as pd
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+
+cancer = load_breast_cancer()
+
+#data = pd.DataFrame(cancer.data, columns=[cancer.feature_names])
+
+
+
+"""                Number of feature             """
+
+
+def Feature():
+
+    return len(cancer['feature_names'])
+
+Feature()
+
+"""                FROM sklearn to Panda Data Frame                 """
+
+
+def Transformater():
+    data = np.c_[cancer.data, cancer.target] # Use numpy to get all the columns
+    columns = np.append(cancer.feature_names, ["target"])
+    #pd.DataFrame(data, columns=columns) # transform numpy to data frame 
+    return pd.DataFrame(data, columns=columns)
+
+frame = Transformater()
+frame.shape == (len(cancer.target), 31)
+
+"""               Count number of breast cancer/healthy                 """
+
+def Count():
+
+    counts = frame.target.value_counts(ascending=True)
+    counts.index = "malignant benign".split()
+    return counts
+
+output = Count()
+""" Count in one line of code""" 
+#counts = frame.target.value_counts(ascending=True) # Count number of different values 
+
+
+"""         Split the DataFrame between data and label                """
+
+df_data = frame.drop(columns=['target'])
+df_label = frame['target']
+
+"""                     Split data set              """
+
+split_value = 426
+
+
+def Splitter():
+    
+    return train_test_split(df_data, df_label, train_size=split_value, test_size=(len(cancer.target)-split_value), random_state=0)
+
+x_train, x_test, y_train, y_test = Splitter()
+
+
+"""                    KNeighbors Classifier                       """
+ 
+ 
+def KNeighbors():
+  
+    model = KNeighborsClassifier(n_neighbors=5)
+    model.fit(x_train, y_train)
+    return model
+
+knn = KNeighbors()
+
+#assert type(knn) == KNeighborsClassifier
+#assert knn.n_neighbors == 4
+
+"""         Predicts the class labels for the means of all features     """
+
+def Predicter_all():
+
+    cancerdf = Transformater()
+    means = cancerdf.mean()[:-1].values.reshape(1, -1) #gets the mean value for each feature
+    model = KNeighbors()
+    return model.predict(means)
+
+Predicter_all()
+    
+
+"""         Predict the class labels for the test set X_test     """
+
+
+def Predicter_x_test():
+
+    knn = KNeighbors()
+    return knn.predict(x_test)
+
+predictions = Predicter_x_test()
+
+
+y_test_label_serie = frame['target'].iloc[426:569]
+y_test_label_frame = y_test_label_serie.to_frame()
+y_test_label_count = y_test_label_frame.target.value_counts(ascending=True)
+
+print(y_test_label_count.iloc[0])
+
+
+
+
+print("no cancer prediction : {0}".format(len(predictions[predictions==0])))
+print("no cancer data  : ", y_test_label_count.iloc[0])
+print("cancer: {0}".format(len(predictions[predictions==1])))
+print("cancer data  : ", y_test_label_count.iloc[1])
+
+
+"""         Accuracy of the model      """
+
+def Accuracy():
+
+
+    return knn.score(x_test, y_test)
+
+print("Accuracy   :"   ,Accuracy())
+
+
+
+
+def accuracy_plot():
+    import matplotlib.pyplot as plt
+
+
+    # Find the training and testing accuracies by target value (i.e. malignant, benign)
+    mal_train_X = x_train[y_train==0]
+    mal_train_y = y_train[y_train==0]
+    ben_train_X = x_train[y_train==1]
+    ben_train_y = y_train[y_train==1]
+
+    mal_test_X = x_test[y_test==0]
+    mal_test_y = y_test[y_test==0]
+    ben_test_X = x_test[y_test==1]
+    ben_test_y = y_test[y_test==1]
+
+
+    scores = [knn.score(mal_train_X, mal_train_y), knn.score(ben_train_X, ben_train_y),
+              knn.score(mal_test_X, mal_test_y), knn.score(ben_test_X, ben_test_y)]
+
+
+    plt.figure()
+
+    # Plot the scores as a bar chart
+    bars = plt.bar(np.arange(4), scores, color=['#4c72b0','#4c72b0','#55a868','#55a868'])
+
+    # directly label the score onto the bars
+    for bar in bars:
+        height = bar.get_height()
+        plt.gca().text(bar.get_x() + bar.get_width()/2, height*.90, '{0:.{1}f}'.format(height, 2),
+                     ha='center', color='w', fontsize=11)
+
+    # remove all the ticks (both axes), and tick labels on the Y axis
+    plt.tick_params(top='off', bottom='off', left='off', right='off', labelleft='off', labelbottom='on')
+
+    # remove the frame of the chart
+    for spine in plt.gca().spines.values():
+        spine.set_visible(False)
+
+    plt.xticks([0,1,2,3], ['Malignant\nTraining', 'Benign\nTraining', 'Malignant\nTest', 'Benign\nTest'], alpha=0.8);
+    plt.title('Training and Test Accuracies for Malignant and Benign Cells (k=5)', alpha=0.8)
+    plt.savefig('K_mean.png', dpi = 1200)
+accuracy_plot()
+
