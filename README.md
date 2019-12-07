@@ -48,7 +48,7 @@ The K-nearest neighbors methods creates clusters based on the data. In our datas
 ![k_meanaa](https://user-images.githubusercontent.com/55028120/70374666-59bf8800-18f5-11ea-8d45-8a1ef044dab0.png)
 
 
-We observe that with k=1, the prediciton match perfectly the training data set and predicts quite well the test data set. With k=5, the model is less robust for the training data set but seems better for the test data set. There is no rules for the value of K but:
+We observe that with k=1, the prediciton matches perfectly the training data set and predicts quite well the test data set. With k=5, the model is less robust for the training data set but seems better for the test data set. There is no rules for the value of K but:
 - A small value of k means that noise will have a higher influence on the result.
 - A large value make it computationally expensive. 
 Data scientists usually choose as an odd number (avoid confusion between two classes) if the number of classes is 2 and another simple approach to select k is set k=sqrt(n).
